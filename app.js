@@ -1,5 +1,7 @@
 var express = require('express');
 var swig = require('swig');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -17,18 +19,17 @@ app.set('view engine', 'html');
 //取消模板缓存
 swig.setDefaults({cache: false});
 
-//首页弄得
-app.get('/',function(req,res,next){
-    //在开发过程中需要取消模板缓存
-    res.render('index'); //res.render('index.html');
+app.use( bodyParser.urlencoded({extended:true}) );
+
+app.use('/admin',require('./routers/admin'));
+app.use('/api',require('./routers/api'));
+app.use('/',require('./routers/main'));
+
+mongoose.connect('mongodb://localhost:27017/bolg',function(err){
+    if(err){
+        console.log('数据库连接失败')
+    }else{
+        console.log('数据库连接成功');
+        app.listen(8282);
+    }
 });
-
-// app.get('/main.css',function(req,res){
-//     res.setHeader('content-type','text/css');
-//     res.send('body {background:red;}');
-// });
-// 
-
-
-
-app.listen(8282);
